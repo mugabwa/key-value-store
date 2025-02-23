@@ -80,6 +80,10 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) delete(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Path[len("/kv/"):]
+	if _, err := s.storage.Get(key); err != nil {
+		http.Error(w, "Key not found", http.StatusNotFound)
+		return
+	}
 	if err := s.storage.Delete(key); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
